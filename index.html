@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triplexa — Triple Metabolic System</title>
+<style>
+  :root {
+    --navy: #0B1426;
+    --midnight: #1a2d4a;
+    --gold: #C9A96E;
+    --teal: #2DD4BF;
+    --white: #F0F2F5;
+    --gray: #94a3b8;
+    --muted: #E8E4DC;
+    --border: rgba(255,255,255,0.08);
+    --tg: #2DD4BF;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(11,20,38,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto; padding: 0 24px;
+    height: 64px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 18px; font-weight: 600; letter-spacing: 3px; color: var(--white);
+  }
+  .logo svg { width: 32px; height: 32px; }
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .nav-links a {
+    font-size: 13px; font-weight: 500; letter-spacing: 0.5px;
+    color: var(--gray); transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-cta {
+    padding: 8px 18px; border-radius: 8px; background: var(--gold);
+    color: var(--navy); font-size: 13px; font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(201,169,110,0.3); }
+  .nav-tg {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border);
+    font-size: 13px; font-weight: 500; color: var(--teal);
+    transition: all 0.2s;
+  }
+  .nav-tg:hover { border-color: var(--teal); background: rgba(45,212,191,0.08); }
+  .menu-btn { display: none; background: none; border: none; color: var(--white); cursor: pointer; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 120px 24px 80px; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -50%; left: -20%; width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(45,212,191,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: ''; position: absolute; bottom: -30%; right: -10%; width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(201,169,110,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-inner { max-width: 900px; text-align: center; position: relative; z-index: 2; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 16px; border-radius: 100px; border: 1px solid var(--border);
+    font-size: 12px; color: var(--gold); letter-spacing: 1px; margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 6vw, 64px); font-weight: 700; line-height: 1.08;
+    letter-spacing: -0.02em; margin-bottom: 20px;
+  }
+  .hero h1 span { color: var(--gold); }
+  .hero p {
+    font-size: clamp(16px, 2.2vw, 20px); color: var(--gray); max-width: 640px;
+    margin: 0 auto 36px; line-height: 1.6;
+  }
+  .hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 600;
+    cursor: pointer; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary { background: var(--gold); color: var(--navy); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,169,110,0.3); }
+  .btn-outline {
+    background: transparent; color: var(--white); border: 1px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-tg {
+    background: transparent; color: var(--teal); border: 1px solid var(--teal);
+  }
+  .btn-tg:hover { background: rgba(45,212,191,0.08); transform: translateY(-2px); }
+
+  .hero-stats {
+    display: flex; gap: 48px; justify-content: center; margin-top: 60px; flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-size: 36px; font-weight: 700; color: var(--gold); line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--gray); margin-top: 6px; letter-spacing: 0.5px; }
+
+  /* SECTIONS */
+  section { padding: 100px 24px; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .section-head {
+    text-align: center; margin-bottom: 64px;
+  }
+  .section-head h2 {
+    font-size: clamp(26px, 4vw, 40px); font-weight: 700; margin-bottom: 12px; letter-spacing: -0.01em;
+  }
+  .section-head p { color: var(--gray); font-size: 17px; max-width: 600px; margin: 0 auto; }
+
+  /* SCIENCE */
+  .science-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .science-card {
+    background: var(--midnight); border: 1px solid var(--border); border-radius: 16px;
+    padding: 32px; position: relative; overflow: hidden; transition: transform 0.3s, border-color 0.3s;
+  }
+  .science-card:hover { transform: translateY(-4px); border-color: rgba(45,212,191,0.3); }
+  .science-card .icon-wrap {
+    width: 48px; height: 48px; border-radius: 12px; background: rgba(45,212,191,0.1);
+    display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+  }
+  .science-card .icon-wrap svg { width: 24px; height: 24px; color: var(--teal); }
+  .science-card h3 { font-size: 20px; font-weight: 600; margin-bottom: 10px; }
+  .science-card p { font-size: 14px; color: var(--gray); line-height: 1.6; }
+  .science-card .tag {
+    display: inline-block; margin-top: 16px; padding: 4px 12px; border-radius: 6px;
+    background: rgba(201,169,110,0.12); color: var(--gold); font-size: 12px; font-weight: 500;
+  }
+  .science-connector {
+    grid-column: 1 / -1; text-align: center; padding: 24px;
+    border: 1px dashed var(--border); border-radius: 16px; margin-top: 8px;
+  }
+  .science-connector h4 { font-size: 18px; color: var(--gold); margin-bottom: 6px; }
+  .science-connector p { font-size: 14px; color: var(--gray); }
+
+  /* PRODUCTS */
+  .products-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .product-card {
+    background: var(--midnight); border: 1px solid var(--border); border-radius: 16px;
+    overflow: hidden; transition: transform 0.3s, border-color 0.3s; display: flex; flex-direction: column;
+  }
+  .product-card:hover { transform: translateY(-4px); border-color: rgba(201,169,110,0.25); }
+  .product-top {
+    padding: 32px 28px 20px; text-align: center;
+    background: linear-gradient(180deg, rgba(26,45,74,0.6) 0%, transparent 100%);
+  }
+  .product-top .prod-icon { margin-bottom: 16px; }
+  .product-top h3 { font-size: 22px; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
+  .product-top .prod-sub { font-size: 12px; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; }
+  .product-body { padding: 24px 28px 28px; flex: 1; display: flex; flex-direction: column; }
+  .product-body p { font-size: 14px; color: var(--gray); line-height: 1.6; margin-bottom: 16px; }
+  .product-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .product-meta span {
+    padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.05);
+    font-size: 12px; color: var(--gray);
+  }
+  .product-benefits { list-style: none; margin-bottom: 24px; }
+  .product-benefits li {
+    font-size: 13px; color: var(--gray); padding: 6px 0; padding-left: 20px; position: relative;
+  }
+  .product-benefits li::before {
+    content: ''; position: absolute; left: 0; top: 12px; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--teal);
+  }
+  .product-cta {
+    margin-top: auto; width: 100%; padding: 12px; border-radius: 10px;
+    background: var(--gold); color: var(--navy); font-weight: 600; font-size: 14px;
+    border: none; cursor: pointer; transition: all 0.2s;
+  }
+  .product-cta:hover { box-shadow: 0 4px 16px rgba(201,169,110,0.3); }
+
+  .kit-banner {
+    margin-top: 32px; background: linear-gradient(135deg, var(--midnight) 0%, var(--navy) 100%);
+    border: 1px solid var(--border); border-radius: 16px; padding: 40px;
+    display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;
+  }
+  .kit-banner h3 { font-size: 24px; margin-bottom: 8px; }
+  .kit-banner p { color: var(--gray); font-size: 15px; max-width: 500px; }
+  .kit-price { text-align: right; }
+  .kit-price .price { font-size: 36px; font-weight: 700; color: var(--gold); }
+  .kit-price .old { font-size: 16px; color: var(--gray); text-decoration: line-through; margin-right: 8px; }
+  .kit-price .note { font-size: 12px; color: var(--gray); margin-top: 4px; }
+
+  /* QUIZ */
+  .quiz-wrap {
+    background: var(--midnight); border: 1px solid var(--border); border-radius: 20px;
+    padding: 48px; max-width: 720px; margin: 0 auto;
+  }
+  .quiz-step { display: none; }
+  .quiz-step.active { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .quiz-step h3 { font-size: 22px; margin-bottom: 24px; text-align: center; }
+  .quiz-options { display: flex; flex-direction: column; gap: 12px; }
+  .quiz-opt {
+    padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02); cursor: pointer; font-size: 15px;
+    transition: all 0.2s; display: flex; align-items: center; gap: 12px;
+  }
+  .quiz-opt:hover { border-color: var(--teal); background: rgba(45,212,191,0.05); }
+  .quiz-opt .radio {
+    width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--gray);
+    flex-shrink: 0; transition: all 0.2s;
+  }
+  .quiz-opt:hover .radio { border-color: var(--teal); }
+  .quiz-progress {
+    height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 32px; overflow: hidden;
+  }
+  .quiz-progress-bar { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.4s ease; }
+  .quiz-result { text-align: center; }
+  .quiz-result h3 { font-size: 24px; margin-bottom: 12px; }
+  .quiz-result p { color: var(--gray); margin-bottom: 24px; }
+  .quiz-result .rec-card {
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px;
+    padding: 24px; text-align: left; margin-bottom: 24px;
+  }
+  .quiz-result .rec-card h4 { color: var(--gold); margin-bottom: 8px; font-size: 16px; }
+  .quiz-result .rec-card ul { list-style: none; }
+  .quiz-result .rec-card li { font-size: 14px; color: var(--gray); padding: 4px 0; }
+
+  /* TRUST */
+  .trust-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+  }
+  .trust-item {
+    background: var(--midnight); border: 1px solid var(--border); border-radius: 14px;
+    padding: 28px; text-align: center; transition: transform 0.2s;
+  }
+  .trust-item:hover { transform: translateY(-3px); }
+  .trust-item svg { width: 36px; height: 36px; color: var(--teal); margin-bottom: 14px; }
+  .trust-item h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .trust-item p { font-size: 13px; color: var(--gray); line-height: 1.5; }
+
+  /* FAQ */
+  .faq-list { max-width: 800px; margin: 0 auto; }
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+  }
+  .faq-q {
+    padding: 22px 0; display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; font-size: 16px; font-weight: 500; transition: color 0.2s;
+  }
+  .faq-q:hover { color: var(--gold); }
+  .faq-q svg { width: 20px; height: 20px; color: var(--gray); transition: transform 0.3s; flex-shrink: 0; margin-left: 16px; }
+  .faq-item.open .faq-q svg { transform: rotate(180deg); }
+  .faq-a {
+    max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease;
+    font-size: 14px; color: var(--gray); line-height: 1.7;
+  }
+  .faq-item.open .faq-a { max-height: 300px; padding-bottom: 22px; }
+
+  /* FOOTER */
+  footer { background: #070d18; border-top: 1px solid var(--border); padding: 60px 24px 32px; }
+  .footer-inner { max-width: 1200px; margin: 0 auto; }
+  .footer-top {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; flex-wrap: wrap; margin-bottom: 48px;
+  }
+  .footer-brand { max-width: 320px; }
+  .footer-brand .logo { margin-bottom: 14px; }
+  .footer-brand p { font-size: 13px; color: var(--gray); line-height: 1.6; }
+  .footer-links { display: flex; gap: 60px; flex-wrap: wrap; }
+  .footer-links h5 { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gray); margin-bottom: 16px; }
+  .footer-links a { display: block; font-size: 14px; color: var(--gray); margin-bottom: 10px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-sub {
+    background: var(--midnight); border: 1px solid var(--border); border-radius: 12px;
+    padding: 24px; min-width: 280px;
+  }
+  .footer-sub h5 { font-size: 14px; margin-bottom: 10px; }
+  .footer-sub p { font-size: 13px; color: var(--gray); margin-bottom: 14px; }
+  .sub-form { display: flex; gap: 8px; }
+  .sub-form input {
+    flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03); color: var(--white); font-size: 14px; outline: none;
+  }
+  .sub-form input::placeholder { color: var(--gray); }
+  .sub-form button {
+    padding: 10px 18px; border-radius: 8px; background: var(--gold); color: var(--navy);
+    font-weight: 600; font-size: 13px; border: none; cursor: pointer;
+  }
+  .footer-tg {
+    margin-top: 16px; display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 10px; border: 1px solid var(--teal);
+    color: var(--teal); font-size: 14px; font-weight: 500; transition: all 0.2s;
+  }
+  .footer-tg:hover { background: rgba(45,212,191,0.08); }
+  .footer-disclaimer {
+    border-top: 1px solid var(--border); padding-top: 24px;
+    font-size: 11px; color: var(--gray); line-height: 1.7;
+  }
+  .footer-disclaimer a { color: var(--gray); text-decoration: underline; }
+  .footer-bottom {
+    margin-top: 24px; display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: var(--gray); flex-wrap: wrap; gap: 12px;
+  }
+
+  /* MOBILE */
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+    .menu-btn { display: block; }
+    .hero-stats { gap: 28px; }
+    .science-grid, .products-grid, .trust-grid { grid-template-columns: 1fr; }
+    .kit-banner { flex-direction: column; text-align: center; }
+    .kit-price { text-align: center; }
+    .quiz-wrap { padding: 28px; }
+    .footer-top { flex-direction: column; }
+    .footer-links { gap: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <svg viewBox="0 0 120 120" fill="none">
+        <path d="M60 18 L96 78 L24 78 Z" stroke="#2DD4BF" stroke-width="4" stroke-linejoin="round"/>
+        <circle cx="60" cy="46" r="5" fill="#C9A96E"/>
+        <circle cx="42" cy="78" r="5" fill="#2DD4BF"/>
+        <circle cx="78" cy="78" r="5" fill="#C9A96E"/>
+      </svg>
+      TRIPLEXA
+    </a>
+    <div class="nav-links">
+      <a href="#science">Механизм</a>
+      <a href="#products">Продукты</a>
+      <a href="#quiz">Протокол</a>
+      <a href="#faq">FAQ</a>
+      <a href="#trust">Качество</a>
+      <a href="https://t.me/triplexa_lab" target="_blank" class="nav-tg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Канал
+      </a>
+      <a href="#products" class="nav-cta">Выбрать продукт</a>
+    </div>
+    <button class="menu-btn" aria-label="Menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      HPLC-проверка каждой партии
+    </div>
+    <h1>Три рецепторных пути.<br>Одна <span>система.</span><br>Нулевые компромиссы.</h1>
+    <p>Triplexa — первый спортивный протокол, который активирует GLP-1, GIP и глюкагоновые рецепторы синхронно. Прецизионная биохимия для тех, кто тренируется всерьёз.</p>
+    <div class="hero-btns">
+      <a href="#products" class="btn btn-primary">Собрать протокол</a>
+      <a href="#science" class="btn btn-outline">Как это работает</a>
+      <a href="https://t.me/triplexa_lab" target="_blank" class="btn btn-tg">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Telegram-канал
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">3</div><div class="stat-label">Синергетических пути</div></div>
+      <div class="stat"><div class="stat-num">98.7%</div><div class="stat-label">Чистота по HPLC</div></div>
+      <div class="stat"><div class="stat-num">24ч</div><div class="stat-label">Полураспад пептидов</div></div>
+      <div class="stat"><div class="stat-num">0</div><div class="stat-label">Стимуляторов</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SCIENCE -->
+<section id="science" style="background:#070d18;">
+  <div class="container">
+    <div class="section-head">
+      <h2>Тройной механизм действия</h2>
+      <p>Каждый модуль воздействует на свой рецепторный путь. Вместе они создают эффект, недостижимый для изолированных добавок.</p>
+    </div>
+    <div class="science-grid">
+      <div class="science-card">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <h3>GLP-1 путь</h3>
+        <p>Активация рецепторов глюкагоноподобного пептида-1 снижает аппетит естественным образом и замедляет опорожнение желудка. Вы едите меньше, не испытывая голода.</p>
+        <span class="tag">Контроль аппетита</span>
+      </div>
+      <div class="science-card">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <h3>GIP путь</h3>
+        <p>Глюкозозависимый инсулинотропный пептид усиливает утилизацию глюкозы в мышцах. Энергия стабильна, нет скачков инсулина и тяги к сладкому.</p>
+        <span class="tag">Стабильная энергия</span>
+      </div>
+      <div class="science-card">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h3>GCG путь</h3>
+        <p>Глюкагоновые рецепторы ускоряют липолиз в покое. Жирные кислоты окисляются быстрее, даже когда вы спите или отдыхаете между тренировками.</p>
+        <span class="tag">Ускоренный липолиз</span>
+      </div>
+      <div class="science-connector">
+        <h4>Синергия трёх путей</h4>
+        <p>Изолированное воздействие на один рецептор даёт 30–40% эффекта. Синхронная активация всех трёх — 90%+ от теоретического максимума. Именно это делает Triplexa не просто добавкой, а системой.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="container">
+    <div class="section-head">
+      <h2>Продуктовая линейка</h2>
+      <p>Три модуля — три времени суток. Каждый решает свою задачу, вместе они создают замкнутый цикл.</p>
+    </div>
+    <div class="products-grid">
+      <!-- BURN -->
+      <div class="product-card">
+        <div class="product-top">
+          <div class="prod-icon">
+            <svg width="56" height="56" viewBox="0 0 120 120" fill="none">
+              <circle cx="60" cy="60" r="54" stroke="#0B1426" stroke-width="2"/>
+              <path d="M60 22 L96 82 L24 82 Z" stroke="#2DD4BF" stroke-width="4" stroke-linejoin="round"/>
+              <circle cx="60" cy="50" r="6" fill="#C9A96E"/>
+              <circle cx="42" cy="82" r="6" fill="#2DD4BF"/>
+              <circle cx="78" cy="82" r="6" fill="#C9A96E"/>
+            </svg>
+          </div>
+          <h3>TRIPLEXA</h3>
+          <div class="prod-sub">Burn</div>
+        </div>
+        <div class="product-body">
+          <p>Утренний модуль для активации жиросжигания. Запускает липолиз через GLP-1/GIP-пути без стимуляторов ЦНС.</p>
+          <div class="product-meta">
+            <span>60 капсул</span>
+            <span>500 мг</span>
+            <span>Утро, натощак</span>
+          </div>
+          <ul class="product-benefits">
+            <li>Снижение аппетита на 23%</li>
+            <li>Ускорение окисления жиров</li>
+            <li>Стабилизация глюкозы</li>
+            <li>Без тахикардии</li>
+          </ul>
+          <button class="product-cta">Добавить в протокол</button>
+        </div>
+      </div>
+      <!-- ENDURE -->
+      <div class="product-card">
+        <div class="product-top">
+          <div class="prod-icon">
+            <svg width="56" height="56" viewBox="0 0 120 120" fill="none">
+              <circle cx="60" cy="60" r="54" stroke="#0B1426" stroke-width="2"/>
+              <path d="M60 22 L96 82 L24 82 Z" stroke="#C9A96E" stroke-width="4" stroke-linejoin="round"/>
+              <circle cx="60" cy="50" r="6" fill="#2DD4BF"/>
+              <circle cx="42" cy="82" r="6" fill="#C9A96E"/>
+              <circle cx="78" cy="82" r="6" fill="#2DD4BF"/>
+            </svg>
+          </div>
+          <h3>TRIPLEXA</h3>
+          <div class="prod-sub">Endure</div>
+        </div>
+        <div class="product-body">
+          <p>Предтренировочный модуль для VO2-max. Работает через митохондриальную биогенезу, а не кофеин.</p>
+          <div class="product-meta">
+            <span>30 саше</span>
+            <span>8 г</span>
+            <span>За 30 мин до трени</span>
+          </div>
+          <ul class="product-benefits">
+            <li>VO2 max +8–11%</li>
+            <li>Снижение RPE на 1.2 балла</li>
+            <li>Быстрее восстановление между сетами</li>
+            <li>Без задержки воды</li>
+          </ul>
+          <button class="product-cta">Добавить в протокол</button>
+        </div>
+      </div>
+      <!-- REBUILD -->
+      <div class="product-card">
+        <div class="product-top">
+          <div class="prod-icon">
+            <svg width="56" height="56" viewBox="0 0 120 120" fill="none">
+              <circle cx="60" cy="60" r="54" stroke="#0B1426" stroke-width="2"/>
+              <path d="M60 22 L96 82 L24 82 Z" stroke="#F0F2F5" stroke-width="4" stroke-linejoin="round"/>
+              <circle cx="60" cy="50" r="6" fill="#C9A96E"/>
+              <circle cx="42" cy="82" r="6" fill="#2DD4BF"/>
+              <circle cx="78" cy="82" r="6" fill="#C9A96E"/>
+            </svg>
+          </div>
+          <h3>TRIPLEXA</h3>
+          <div class="prod-sub">Rebuild</div>
+        </div>
+        <div class="product-body">
+          <p>Вечерний модуль для репарации мышц и суставов. Коллаген + BCAA + мелатонин для глубокого восстановления.</p>
+          <div class="product-meta">
+            <span>450 г</span>
+            <span>15 порций</span>
+            <span>Вечер, после трени</span>
+          </div>
+          <ul class="product-benefits">
+            <li>DOMS -34% через 48ч</li>
+            <li>Синтез коллагена в связках</li>
+            <li>Deep sleep +12%</li>
+            <li>Гормональный баланс</li>
+          </ul>
+          <button class="product-cta">Добавить в протокол</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KIT -->
+    <div class="kit-banner">
+      <div>
+        <h3>Triplexa System Kit</h3>
+        <p>Полный цикл за 30 дней: Burn + Endure + Rebuild + персональный протокол + трекер прогресса. Экономия 20% и бесплатная доставка.</p>
+      </div>
+      <div class="kit-price">
+        <div><span class="old">14 970 ₽</span><span class="price">11 970 ₽</span></div>
+        <div class="note">Подписка с доставкой каждые 30 дней</div>
+        <button class="btn btn-primary" style="margin-top:12px;">Оформить подписку</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" style="background:#070d18;">
+  <div class="container">
+    <div class="section-head">
+      <h2>Подберите свой протокол</h2>
+      <p>Ответьте на 4 вопроса — получите персональную рекомендацию с дозировкой и графиком.</p>
+    </div>
+    <div class="quiz-wrap">
+      <div class="quiz-progress"><div class="quiz-progress-bar" id="qbar" style="width:25%"></div></div>
+      
+      <div class="quiz-step active" data-step="1">
+        <h3>Какая у вас главная цель?</h3>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="nextQ(1,'fat')"><div class="radio"></div>Сжигание жира и контроль веса</div>
+          <div class="quiz-opt" onclick="nextQ(1,'endurance')"><div class="radio"></div>Выносливость и спортивная производительность</div>
+          <div class="quiz-opt" onclick="nextQ(1,'recovery')"><div class="radio"></div>Восстановление и снижение травматизма</div>
+          <div class="quiz-opt" onclick="nextQ(1,'complex')"><div class="radio"></div>Комплексное улучшение всех параметров</div>
+        </div>
+      </div>
+      
+      <div class="quiz-step" data-step="2">
+        <h3>Сколько раз в неделю вы тренируетесь?</h3>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="nextQ(2,'1-2')"><div class="radio"></div>1–2 раза (поддержание формы)</div>
+          <div class="quiz-opt" onclick="nextQ(2,'3-4')"><div class="radio"></div>3–4 раза (регулярные тренировки)</div>
+          <div class="quiz-opt" onclick="nextQ(2,'5+')"><div class="radio"></div>5+ раз (спорт на высоком уровне)</div>
+          <div class="quiz-opt" onclick="nextQ(2,'pro')"><div class="radio"></div>Ежедневно, готовлюсь к соревнованиям</div>
+        </div>
+      </div>
+      
+      <div class="quiz-step" data-step="3">
+        <h3>Есть ли опыт с пептидными добавками?</h3>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="nextQ(3,'no')"><div class="radio"></div>Нет, первый опыт</div>
+          <div class="quiz-opt" onclick="nextQ(3,'basic')"><div class="radio"></div>Принимал коллаген / простые комплексы</div>
+          <div class="quiz-opt" onclick="nextQ(3,'advanced')"><div class="radio"></div>Знаком с целевыми пептидами</div>
+          <div class="quiz-opt" onclick="nextQ(3,'expert')"><div class="radio"></div>Работаю с протоколами под контролем специалиста</div>
+        </div>
+      </div>
+      
+      <div class="quiz-step" data-step="4">
+        <h3>Предпочтительный формат приёма?</h3>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="finishQ('caps')"><div class="radio"></div>Капсулы — удобно, нет вкуса</div>
+          <div class="quiz-opt" onclick="finishQ('powder')"><div class="radio"></div>Порошок / саше — быстрее усвоение</div>
+          <div class="quiz-opt" onclick="finishQ('mixed')"><div class="radio"></div>Смешанный формат — капсулы + порошок</div>
+          <div class="quiz-opt" onclick="finishQ('any')"><div class="radio"></div>Неважно, главное — результат</div>
+        </div>
+      </div>
+      
+      <div class="quiz-step" data-step="5">
+        <div class="quiz-result" id="qresult">
+          <h3>Ваш протокол готов</h3>
+          <p>На основе ответов мы подобрали оптимальную комбинацию модулей Triplexa.</p>
+          <div class="rec-card" id="recard">
+            <h4 id="rectitle">System Kit — полный цикл</h4>
+            <ul id="reclist">
+              <li>Burn по 2 капсулы утром</li>
+              <li>Endure по 1 саше перед тренировкой</li>
+              <li>Rebuild по 1 порции вечером</li>
+              <li>Курс: 8 недель с перерывом 2 недели</li>
+            </ul>
+          </div>
+          <button class="btn btn-primary" onclick="alert('Перенаправление на оформление заказа...')">Перейти к оформлению</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section id="trust">
+  <div class="container">
+    <div class="section-head">
+      <h2>Качество, которое можно проверить</h2>
+      <p>Каждая партия проходит независимую экспертизу. Результаты доступны по номеру партии в личном кабинете.</p>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <h4>HPLC-анализ</h4>
+        <p>Высокоэффективная жидкостная хроматография каждой партии. Чистота ≥98.7%.</p>
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <h4>GMP-сертификация</h4>
+        <p>Производство на объектах, сертифицированных по международному стандарту.</p>
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        <h4>WADA-compliant</h4>
+        <p>Формулы не содержат запрещённых веществ по списку WADA 2026.</p>
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        <h4>Batch tracking</h4>
+        <p>Каждая упаковка имеет уникальный номер партии с полным отчётом лаборатории.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="background:#070d18;">
+  <div class="container">
+    <div class="section-head">
+      <h2>Частые вопросы</h2>
+      <p>Всё, что нужно знать перед стартом протокола.</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item open">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Чем Triplexa отличается от обычных жиросжигателей?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">Стандартные термогеники работают через стимуляцию ЦНС — повышают ЧСС, давление, вызывают тревожность. Triplexa Burn действует на метаболический уровень: активирует рецепторы, отвечающие за липолиз и сытость, без воздействия на адреналин. Это позволяет сжигать жир, сохраняя мышцы и нервную систему.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Можно ли принимать все три модуля одновременно?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">Да, именно для этого создан System Kit. Модули разделены по времени суток: Burn — утром, Endure — перед тренировкой, Rebuild — вечером. Они не конкурируют за усвоение и не создают нагрузки на печень. Для новичков рекомендуем начать с Burn, добавляя Endure и Rebuild через неделю.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Безопасно ли для соревновательных спортсменов?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">Все ингредиенты Triplexa — нутрицевтики и пептидные комплексы, не входящие в запрещённый список WADA 2026. Однако мы настоятельно рекомендуем проверять актуальный список перед стартом, так как WADA обновляет его ежегодно. При подозрении — проконсультируйтесь с антидопинговым офицером вашей федерации.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Как проверяется качество?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">Каждая партия проходит HPLC-анализ в независимой лаборатории. Результаты публикуются в личном кабинете по номеру партии. Мы проверяем: идентичность пептидов (≥98%), отсутствие тяжёлых металлов, микробиологическую чистоту, стабильность при хранении.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Когда появится первый результат?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">Burn: снижение аппетита — 3–5 дней, визуальные изменения состава тела — 14–21 день. Endure: повышение выносливости — 7–10 дней. Rebuild: снижение мышечной боли — с первого приёма, накопительный эффект — 2–3 недели. Результаты индивидуальны и зависят от тренировочного объёма, сна и питания.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Есть ли побочные эффекты?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">При соблюдении дозировки побочные эффекты минимальны. В первые 3–5 дней Burn возможно лёгкое чувство сытости и замедление пищеварения — это нормальная реакция активации GLP-1-пути. Endure может вызвать покраснение кожи (флеш) от бета-аланина — безопасно и проходит за 20 минут. Rebuild содержит 0.5 мг мелатонина — не вызывает утренней сонливости.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Можно ли отменить подписку?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">Да, в любой момент через личный кабинет или написав в поддержку. Доставка следующего месяца отменяется без штрафов. Возврат средств — за неоткрытую упаковку в течение 14 дней с момента получения.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="logo">
+          <svg viewBox="0 0 120 120" fill="none">
+            <path d="M60 18 L96 78 L24 78 Z" stroke="#2DD4BF" stroke-width="4" stroke-linejoin="round"/>
+            <circle cx="60" cy="46" r="5" fill="#C9A96E"/>
+            <circle cx="42" cy="78" r="5" fill="#2DD4BF"/>
+            <circle cx="78" cy="78" r="5" fill="#C9A96E"/>
+          </svg>
+          TRIPLEXA
+        </a>
+        <p>Прецизионная пептидная терапия для спортсменов и тех, кто тренируется всерьёз. Три пути. Одна цель. Нулевые компромиссы.</p>
+        <a href="https://t.me/triplexa_lab" target="_blank" class="footer-tg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          Telegram-канал Triplexa Lab
+        </a>
+      </div>
+      <div class="footer-links">
+        <div>
+          <h5>Продукты</h5>
+          <a href="#products">Triplexa Burn</a>
+          <a href="#products">Triplexa Endure</a>
+          <a href="#products">Triplexa Rebuild</a>
+          <a href="#products">System Kit</a>
+        </div>
+        <div>
+          <h5>Компания</h5>
+          <a href="#science">Механизм</a>
+          <a href="#trust">Качество</a>
+          <a href="#faq">FAQ</a>
+          <a href="#">Контакты</a>
+        </div>
+        <div>
+          <h5>Правовая информация</h5>
+          <a href="#">Политика конфиденциальности</a>
+          <a href="#">Условия использования</a>
+          <a href="#">Доставка и возврат</a>
+          <a href="#">Публичная оферта</a>
+        </div>
+      </div>
+      <div class="footer-sub">
+        <h5>Подписка на протоколы</h5>
+        <p>Новые исследования, персональные рекомендации и скидки подписчикам.</p>
+        <form class="sub-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Подписано!';">
+          <input type="email" placeholder="your@email.com" required>
+          <button type="submit">Подписаться</button>
+        </form>
+      </div>
+    </div>
+    
+    <div class="footer-disclaimer">
+      <strong>Медицинский отказ от ответственности.</strong> Продукты Triplexa являются пищевыми добавками (нутрицевтиками) и не предназначены для диагностики, лечения, профилактики или излечения каких-либо заболеваний. Перед началом приёма проконсультируйтесь с врачом, особенно если вы принимаете лекарства от диабета, гипертонии или имеете заболевания печени/почек. Не превышайте рекомендуемую дозировку.<br><br>
+      <strong>WADA и антидопинг.</strong> Triplexa не содержит веществ, входящих в Запрещённый список WADA на 2026 год. Тем не менее, спортсмены, проходящие допинг-контроль, обязаны самостоятельно проверять актуальный список на сайте wada-ama.org. Производитель не несёт ответственности за изменения в регуляции после выпуска партии.<br><br>
+      <strong>Индивидуальные результаты.</strong> Все заявленные эффекты основаны на внутренних исследованиях и отзывах пользователей. Результаты индивидуальны и зависят от генетики, тренировочного объёма, питания, сна и стресса. Triplexa не гарантирует конкретных результатов.<br><br>
+      <strong>Возрастные ограничения.</strong> Продукты Triplexa предназначены для лиц старше 18 лет. Не рекомендуется беременным и кормящим женщинам. Хранить в недоступном для детей месте.
+    </div>
+    
+    <div class="footer-bottom">
+      <span>© 2026 Triplexa. Все права защищены.</span>
+      <span>Информация на сайте носит исключительно информационный характер.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // FAQ accordion
+  function toggleFaq(el) {
+    const item = el.parentElement;
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  }
+
+  // Quiz logic
+  const answers = {};
+  function nextQ(step, val) {
+    answers['q'+step] = val;
+    document.querySelector('.quiz-step[data-step="'+step+'"]').classList.remove('active');
+    document.querySelector('.quiz-step[data-step="'+(step+1)+'"]').classList.add('active');
+    document.getElementById('qbar').style.width = ((step+1)*25)+'%';
+  }
+  function finishQ(val) {
+    answers.q4 = val;
+    document.querySelector('.quiz-step[data-step="4"]').classList.remove('active');
+    document.querySelector('.quiz-step[data-step="5"]').classList.add('active');
+    document.getElementById('qbar').style.width = '100%';
+    
+    const goal = answers.q1;
+    const freq = answers.q2;
+    const exp = answers.q3;
+    const form = answers.q4;
+    
+    let title = 'System Kit — полный цикл';
+    let list = [
+      'Burn по 2 капсулы утром',
+      'Endure по 1 саше перед тренировкой',
+      'Rebuild по 1 порции вечером',
+      'Курс: 8 недель с перерывом 2 недели'
+    ];
+    
+    if (goal === 'fat') {
+      title = 'Burn Intensive — фокус на жиросжигание';
+      list = ['Burn по 2 капсулы утром и по 1 после обеда', 'Rebuild по 1 порции вечером для сохранения мышц', 'Курс: 12 недель', 'Endure добавить на 5-й неделе для сохранения выносливости'];
+    } else if (goal === 'endurance') {
+      title = 'Endure Pro — выносливость в приоритете';
+      list = ['Endure по 1 саше за 30 мин до каждой тренировки', 'Rebuild по 1 порции вечером', 'Burn — через 4 недели для композиции', 'Курс: 10 недель'];
+    } else if (goal === 'recovery') {
+      title = 'Rebuild Max — восстановление и репарация';
+      list = ['Rebuild по 1.5 порции в день (разделить)', 'Burn по 1 капсуле утром для метаболизма', 'Endure — только в дни высокой нагрузки', 'Курс: 8 недель'];
+    }
+    
+    if (exp === 'no') {
+      list.push('Начните с половинной дозировки первые 5 дней');
+    }
+    if (freq === '1-2') {
+      list.push('Рекомендуем увеличить тренировочный объём до 3 раз в неделю для максимального эффекта');
+    }
+    
+    document.getElementById('rectitle').textContent = title;
+    document.getElementById('reclist').innerHTML = list.map(l => '<li>'+l+'</li>').join('');
+  }
+</script>
+
+</body>
+</html>
